@@ -393,6 +393,33 @@ h2::after {
   padding: 20px 24px;
 }
 
+/* お知らせブロック */
+.hero-notice {
+  background-color: #fff0f3;
+  border: 1px solid #ffccd5;
+  border-radius: var(--radius-md);
+  padding: 16px;
+  text-align: center;
+}
+
+.hero-notice-label {
+  display: inline-block;
+  background: #e63946;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 2px 12px;
+  border-radius: 50px;
+  margin-bottom: 8px;
+}
+
+.hero-notice-body {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #c1121f;
+  line-height: 1.6;
+}
+
 /* 2. Services */
 .service-list {
   display: grid;
