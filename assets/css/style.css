@@ -683,6 +683,6 @@ h2::after {
 }
 
 .btn-fixed .sub {
-  font-size: 0.75rem;
-  font-weight: 400;
+  font-size: 1.0rem;
+  font-weight: 700;
 }
