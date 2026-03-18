@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>お知らせ管理 | 大田区自転車パンク出張修理センター</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --clr-brand: #2b9348;
+      --clr-brand-dark: #007f5f;
+      --clr-line: #06C755;
+      --clr-bg: #f8f9fa;
+      --clr-text: #333;
+      --radius: 12px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      background: var(--clr-bg);
+      color: var(--clr-text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .admin-card {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      padding: 32px 24px;
+      width: 100%;
+      max-width: 420px;
+    }
+    .admin-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--clr-brand-dark);
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    .admin-subtitle {
+      font-size: 0.85rem;
+      color: #999;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #555;
+    }
+    input[type="password"],
+    textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-family: inherit;
+      transition: border-color 0.3s;
+    }
+    input[type="password"]:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--clr-brand);
+    }
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+    .field { margin-bottom: 20px; }
+    .btn-submit {
+      width: 100%;
+      padding: 16px;
+      background: var(--clr-line);
+      color: #fff;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .btn-submit:hover { background: #05a346; }
+    .btn-submit:active { transform: scale(0.97); }
+    .btn-submit:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    .btn-clear {
+      width: 100%;
+      padding: 12px;
+      background: #fff;
+      color: #e63946;
+      font-size: 0.95rem;
+      font-weight: 700;
+      border: 2px solid #e63946;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 12px;
+    }
+    .btn-clear:hover { background: #fff0f0; }
+    .status {
+      margin-top: 16px;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      text-align: center;
+      display: none;
+    }
+    .status.success { display: block; background: #d4edda; color: #155724; }
+    .status.error { display: block; background: #f8d7da; color: #721c24; }
+    .status.loading { display: block; background: #fff3cd; color: #856404; }
+    .divider {
+      border: none;
+      border-top: 1px dashed #e0e0e0;
+      margin: 20px 0;
+    }
+    .help-text {
+      font-size: 0.75rem;
+      color: #aaa;
+      margin-top: 4px;
+    }
+    .current-notice {
+      background: #fff0f3;
+      border: 1px solid #ffccd5;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .current-notice-label {
+      font-size: 0.75rem;
+      color: #999;
+      margin-bottom: 4px;
+    }
+    .current-notice-text {
+      font-weight: 700;
+      color: #c1121f;
+    }
+    .current-notice-empty {
+      color: #999;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+
+<div class="admin-card">
+  <h1 class="admin-title">📢 お知らせ管理</h1>
+  <p class="admin-subtitle">お知らせ欄のテキストを更新できます</p>
+
+  <!-- 現在のお知らせ表示 -->
+  <div class="current-notice" id="currentNotice">
+    <p class="current-notice-label">現在のお知らせ</p>
+    <p class="current-notice-text" id="currentNoticeText">読み込み中...</p>
+  </div>
+
+  <div class="field">
+    <label for="token">🔑 アクセストークン</label>
+    <input type="password" id="token" placeholder="GitHubトークンを入力">
+    <p class="help-text">初回だけ入力すればブラウザに保存されます</p>
+  </div>
+
+  <div class="field">
+    <label for="noticeText">📝 お知らせ内容</label>
+    <textarea id="noticeText" placeholder="例: 3/20（金）〜 3/22（日）まではお休みします"></textarea>
+    <p class="help-text">空欄で送信するとお知らせが非表示になります</p>
+  </div>
+
+  <button class="btn-submit" id="btnSubmit" onclick="updateNotice()">
+    ✅ お知らせを更新する
+  </button>
+
+  <button class="btn-clear" onclick="clearNotice()">
+    🗑️ お知らせを消す（非表示にする）
+  </button>
+
+  <div class="status" id="status"></div>
+</div>
+
+<script>
+// ===== 設定 =====
+const GITHUB_OWNER = 'kukunko-sys';
+const GITHUB_REPO = 'tokyobikerepair';
+const FILE_PATH = 'index.html';
+const API_BASE = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${FILE_PATH}`;
+
+// ===== トークン永続化（localStorage） =====
+function loadSavedToken() {
+  const saved = localStorage.getItem('gh_admin_token');
+  if (saved) {
+    document.getElementById('token').value = saved;
+  }
+}
+
+function saveToken(tokenValue) {
+  localStorage.setItem('gh_admin_token', tokenValue);
+}
+
+function getToken() {
+  const tokenValue = document.getElementById('token').value.trim();
+  if (tokenValue) saveToken(tokenValue);
+  return tokenValue;
+}
+
+// ===== ステータス表示 =====
+function showStatus(message, type) {
+  const el = document.getElementById('status');
+  el.className = `status ${type}`;
+  el.textContent = message;
+}
+
+// ===== 現在のお知らせを読み込み =====
+async function loadCurrentNotice() {
+  try {
+    const res = await fetch(API_BASE, {
+      headers: { 'Accept': 'application/vnd.github.v3+json' }
+    });
+    const data = await res.json();
+    const htmlContent = atob(data.content);
+
+    const noticeMatch = htmlContent.match(
+      /<p class="hero-notice-body">(.*?)<\/p>/s
+    );
+
+    const textEl = document.getElementById('currentNoticeText');
+    if (noticeMatch && noticeMatch[1].trim()) {
+      textEl.textContent = noticeMatch[1].trim();
+      textEl.className = 'current-notice-text';
+    } else {
+      textEl.textContent = '（お知らせなし）';
+      textEl.className = 'current-notice-text current-notice-empty';
+    }
+  } catch (err) {
+    document.getElementById('currentNoticeText').textContent = '読み込みエラー';
+  }
+}
+
+// ===== お知らせ更新（メイン処理） =====
+async function updateNotice() {
+  const authToken = getToken();
+  const noticeText = document.getElementById('noticeText').value.trim();
+
+  if (!authToken) {
+    showStatus('❌ アクセストークンを入力してください', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('btnSubmit');
+  btn.disabled = true;
+  showStatus('⏳ 更新中...', 'loading');
+
+  try {
+    // 1. 現在のファイルを取得（SHA が必要）
+    const getRes = await fetch(API_BASE, {
+      headers: {
+        'Authorization': `token ${authToken}`,
+        'Accept': 'application/vnd.github.v3+json'
+      }
+    });
+
+    if (!getRes.ok) {
+      throw new Error('トークンが無効か、リポジトリにアクセスできません');
+    }
+
+    const fileData = await getRes.json();
+    const currentContent = atob(fileData.content);
+    const fileSha = fileData.sha;
+
+    // 2. お知らせ部分を書き換え
+    let newContent;
+    if (noticeText) {
+      // お知らせあり → 表示
+      newContent = currentContent.replace(
+        /<!-- お知らせブロック -->[\s\S]*?(?=\s*<\/div>\s*<\/header>)/,
+        `<!-- お知らせブロック -->\n      <div class="hero-notice">\n        <p class="hero-notice-label">お知らせ</p>\n        <p class="hero-notice-body">${escapeHtml(noticeText)}</p>\n      </div>`
+      );
+    } else {
+      // お知らせなし → 非表示（空ブロック）
+      newContent = currentContent.replace(
+        /<!-- お知らせブロック -->[\s\S]*?(?=\s*<\/div>\s*<\/header>)/,
+        `<!-- お知らせブロック -->\n      <!-- お知らせなし -->`
+      );
+    }
+
+    // 3. GitHub API でコミット
+    const updateRes = await fetch(API_BASE, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `token ${authToken}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        message: noticeText
+          ? `update: お知らせ更新「${noticeText.substring(0, 30)}」`
+          : 'update: お知らせを非表示に変更',
+        content: btoa(unescape(encodeURIComponent(newContent))),
+        sha: fileSha
+      })
+    });
+
+    if (!updateRes.ok) {
+      const errData = await updateRes.json();
+      throw new Error(errData.message || '更新に失敗しました');
+    }
+
+    showStatus('✅ 更新完了！1〜2分後にサイトに反映されます', 'success');
+    loadCurrentNotice();
+
+  } catch (err) {
+    showStatus(`❌ ${err.message}`, 'error');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// ===== お知らせを消す =====
+function clearNotice() {
+  document.getElementById('noticeText').value = '';
+  updateNotice();
+}
+
+// ===== HTMLエスケープ =====
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+// ===== 初期化 =====
+window.addEventListener('DOMContentLoaded', () => {
+  loadSavedToken();
+  loadCurrentNotice();
+});
+</script>
+
+</body>
+</html>
