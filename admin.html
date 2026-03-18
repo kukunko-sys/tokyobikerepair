@@ -194,6 +194,22 @@ const GITHUB_REPO = 'tokyobikerepair';
 const FILE_PATH = 'index.html';
 const API_BASE = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${FILE_PATH}`;
 
+// ===== UTF-8 対応 Base64 デコード・エンコード =====
+function decodeBase64Utf8(base64Str) {
+  const binaryStr = atob(base64Str);
+  const bytes = Uint8Array.from(binaryStr, (ch) => ch.charCodeAt(0));
+  return new TextDecoder('utf-8').decode(bytes);
+}
+
+function encodeBase64Utf8(str) {
+  const bytes = new TextEncoder().encode(str);
+  let binaryStr = '';
+  for (const byte of bytes) {
+    binaryStr += String.fromCharCode(byte);
+  }
+  return btoa(binaryStr);
+}
+
 // ===== トークン永続化（localStorage） =====
 function loadSavedToken() {
   const saved = localStorage.getItem('gh_admin_token');
@@ -226,7 +242,8 @@ async function loadCurrentNotice() {
       headers: { 'Accept': 'application/vnd.github.v3+json' }
     });
     const data = await res.json();
-    const htmlContent = atob(data.content);
+    const rawContent = data.content.replace(/\n/g, '');
+    const htmlContent = decodeBase64Utf8(rawContent);
 
     const noticeMatch = htmlContent.match(
       /<p class="hero-notice-body">(.*?)<\/p>/s
@@ -273,7 +290,8 @@ async function updateNotice() {
     }
 
     const fileData = await getRes.json();
-    const currentContent = atob(fileData.content);
+    const rawContent = fileData.content.replace(/\n/g, '');
+    const currentContent = decodeBase64Utf8(rawContent);
     const fileSha = fileData.sha;
 
     // 2. お知らせ部分を書き換え
@@ -304,7 +322,7 @@ async function updateNotice() {
         message: noticeText
           ? `update: お知らせ更新「${noticeText.substring(0, 30)}」`
           : 'update: お知らせを非表示に変更',
-        content: btoa(unescape(encodeURIComponent(newContent))),
+        content: encodeBase64Utf8(newContent),
         sha: fileSha
       })
     });
