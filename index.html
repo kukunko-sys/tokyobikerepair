@@ -23,6 +23,23 @@
   <!-- CSS -->
   <link rel="stylesheet" href="./assets/css/style.css">
 
+  <!-- PREVIEW GATE CSS: オープン時に削除 -->
+  <style id="preview-gate-style">
+    .pg-main-content { visibility: hidden; }
+    .pg-maintenance {
+      display: none;
+      position: fixed; inset: 0; z-index: 99999;
+      background: #f8f9fa;
+      font-family: 'Noto Sans JP', sans-serif;
+      text-align: center;
+      padding: 20vh 24px 0;
+    }
+    .pg-maintenance.is-active { display: block; }
+    .pg-maintenance h1 { font-size: 1.4rem; color: #2b9348; margin-bottom: 12px; }
+    .pg-maintenance p  { font-size: 0.95rem; color: #666; line-height: 1.8; }
+  </style>
+  <!-- /PREVIEW GATE CSS -->
+
   <!-- JSON-LD (Schema.org) for AIO/SEO -->
   <script type="application/ld+json">
   {
@@ -63,7 +80,14 @@
   }
   </script>
 </head>
-<body>
+<body class="pg-main-content">
+
+  <!-- PREVIEW GATE SCREEN: オープン時に削除 -->
+  <div class="pg-maintenance" id="pgMaintenance">
+    <h1>🚲 ただいま準備中です</h1>
+    <p>サイトは現在メンテナンス中です。<br>オープンまでしばらくお待ちください。</p>
+  </div>
+  <!-- /PREVIEW GATE SCREEN -->
 
   <!-- =====================================
        1. Hero Section (ファーストビュー)
@@ -384,6 +408,19 @@
       <span class="sub">営業時間 平日 18:00 ～ 23:00</span>
     </a>
   </div>
+
+  <!-- PREVIEW GATE SCRIPT: オープン時に削除 -->
+  <script>
+    (function() {
+      var hasToken = Boolean(localStorage.getItem('gh_admin_token'));
+      if (hasToken) {
+        document.querySelector('.pg-main-content').classList.remove('pg-main-content');
+      } else {
+        document.getElementById('pgMaintenance').classList.add('is-active');
+      }
+    })();
+  </script>
+  <!-- /PREVIEW GATE SCRIPT -->
 
 </body>
 </html>
